@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken')
 const {boolean, string} = require("joi");
 
 const userSchema = new mongoose.Schema({
@@ -20,18 +21,17 @@ const userSchema = new mongoose.Schema({
         max: 1024,
         min: 6
     },
-    date: {
+    createdAt: {
         type: Date,
         default: Date.now()
     },
     isVerified: {
         type: Boolean,
         default: false
-    },
-    verificationString: {
-        type: String,
-        default: ''
     }
 })
 
+userSchema.methods.generateToken = () =>{
+    return jwt.sign({id:this._id,name:this.name,isVerified:this.isVerified,},JWT_SECRET)
+}
 module.exports = mongoose.model('User', userSchema);
